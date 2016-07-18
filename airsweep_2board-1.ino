@@ -11,14 +11,16 @@ bool randomizer = false;
 long Time = 2000;
 int End;
 int count = 0;
-
-int CamPin = 13;
+int LED = 9;
+int CamPin = 5;
 
 void setup()
 {
-  
+
+  pinMode(LED, OUTPUT);
   pinMode(CamPin, OUTPUT);
   digitalWrite(CamPin, LOW);
+  digitalWrite(LED, LOW);
 
 
   //Uses analog signal from empty A3 to serve as random starting point for random number generation
@@ -27,6 +29,9 @@ void setup()
   Wire.begin();
   Serial.begin(9600);
 
+  Wire.beginTransmission(10);
+  Wire.write(4);
+  Wire.endTransmission();
 
   //Serial Monitor Setup
   Serial.println("Behavioral Setup");
@@ -34,7 +39,7 @@ void setup()
   Serial.println("Press 2 to end session");
   Serial.println("Press 3 to toggle random servo movement");
   Serial.println("Press 4 to test servo");
-  Serial.println("Press 5 to toggle LED");
+  Serial.println("Press 5 to define LED paradigm");
   delay(500);
 
 }
@@ -65,6 +70,10 @@ void loop() {
       Serial.println("Count#\tDuration");
       trial_start = true;
     }
+
+    if (control_char == '5') {
+
+    }
   }
   while (trial_start) {
     if (Serial.available()) {
@@ -78,7 +87,7 @@ void loop() {
     }
     if (randomizer) {
       randTime();
-      }
+    }
     Serial.print(count);
     Serial.print("\t");
     Serial.println(Time);
@@ -86,8 +95,8 @@ void loop() {
     Wire.beginTransmission(10);
     Wire.write(6);
     Wire.endTransmission();
-   
-    delay(Time - 1000); 
+
+    delay(Time - 1000);
 
     digitalWrite(CamPin, HIGH);   //Sends TTL pulse to trigger Master 9
     delay(100);
@@ -99,7 +108,7 @@ void loop() {
     Wire.endTransmission();
 
     delay(8000);
-    
+
     count = count + 1;
   }
 }
@@ -123,3 +132,34 @@ void end_session() {
   delay(500);
   asm volatile ("  jmp 0");   // Makes the Arduino soft reset
 }
+
+void led() {
+  Serial.println("Please input desired length of light pulse in ms");
+  if (Serial.available()) {
+    long led_length = Serial.read();
+    if (led_length > 5000) {
+      Serial.println("Your input exceeded 5 seconds");
+      led();
+    }
+    else {
+      Serial.print("Light pulse length is ");
+      Serial.println(led_length);
+      Serial.println();
+      Serial.println("Please input the desired start time relative to the servo return as t = 0");
+      if (Serial.available()) {
+        long led_start = Serial.read();
+        if (led_start > 1000 or led_start < -5000) {
+          Serial.println("Start exceeds parameters");
+          led();
+        }
+        else {
+          Serial.print("LED start occurs ");
+          Serial.print(led_start);
+          Serial.println(" ms from the return of the servo arm");
+          Serial.println();
+        }
+      }
+    }
+  }
+}
+

@@ -23,7 +23,6 @@ void setup()
 }
 
 void loop() {
-delay(100);
 
 if (x == 4){
   servo_test();
@@ -36,8 +35,6 @@ else if(x == 7){
 }
 
 }
-
-
 
 void servo_test() {
   for (pos = 0; pos <= 90; pos += 1) // goes from 0 degrees to 90 degrees
