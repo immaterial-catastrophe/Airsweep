@@ -18,8 +18,8 @@ void setup()
   
   myservo.write(2);    //Automatically places servo arm at zero*(Servo can not go perfectly to 0 degrees)
 
-  Wire.begin(10);
-  Wire.onReceive(what2do);
+  Wire.begin(10); //Begins I2C protocol and declares I2C slave address as 10
+  Wire.onReceive(what2do); //On recieve runs function what2do which defines x as the recieved byte.
 }
 
 void loop() {

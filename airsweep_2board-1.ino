@@ -26,11 +26,11 @@ void setup()
   //Uses analog signal from empty A3 to serve as random starting point for random number generation
   randomSeed(analogRead(3));
 
-  Wire.begin();
-  Serial.begin(9600);
+  Wire.begin(); //Begin I2C protocol as master
+  Serial.begin(9600); //Begin serial output at 9600 baud
 
-  Wire.beginTransmission(10);
-  Wire.write(4);
+  Wire.beginTransmission(10); //Send begin transmission to I2C address of the second board
+  Wire.write(4); //Data sent to second board for initial servo test on startup
   Wire.endTransmission();
 
   //Serial Monitor Setup
@@ -39,7 +39,7 @@ void setup()
   Serial.println("Press 2 to end session");
   Serial.println("Press 3 to toggle random servo movement");
   Serial.println("Press 4 to test servo");
-  Serial.println("Press 5 to define LED paradigm");
+  //Serial.println("Press 5 to define LED paradigm");
   delay(500);
 
 }
@@ -50,7 +50,7 @@ void loop() {
     control_char = Serial.read();
 
     if (control_char == '3') {
-      randomizer = !randomizer;
+      randomizer = !randomizer; //Toggles boolean value of whether random generator is required
       Serial.print("Randomizer:\t");
       Serial.print("\t");
       Serial.println(randomizer);
@@ -59,7 +59,7 @@ void loop() {
 
     if (control_char == '4') {
       Wire.beginTransmission(10);
-      Wire.write(4);
+      Wire.write(4); //Servo test function
       Wire.endTransmission();
     }
 
@@ -71,7 +71,7 @@ void loop() {
       trial_start = true;
     }
 
-    if (control_char == '5') {
+    if (control_char == '5') { //Not finished
 
     }
   }
@@ -127,7 +127,7 @@ void randTime() {
 void end_session() {
   Serial.println();
   Wire.beginTransmission(10);
-  Wire.write(8);
+  Wire.write(8); // resets servo position
   Wire.endTransmission();
   delay(500);
   asm volatile ("  jmp 0");   // Makes the Arduino soft reset
